@@ -12,10 +12,10 @@ const uri = process.env.DB_PATH;
 
 let client = new MongoClient(uri, { useNewUrlParser: true });
 
-app.get('/serviceType', (req, res) =>{
+app.get('/appointment', (req, res) =>{
     client = new MongoClient(uri, { useNewUrlParser: true });
     client.connect(err => {
-        const collection = client.db("doctorsPortal").collection("serviceType");
+        const collection = client.db("doctorsPortal").collection("appointment");
         collection.find().toArray((err, documents)=>{
             if(err){
                 console.log(err)
@@ -29,13 +29,13 @@ app.get('/serviceType', (req, res) =>{
       });
 });
 
-app.post('/addServiceType', (req, res) => {
+app.post('/addAppointment', (req, res) => {
     const orderDetails = req.body;
     orderDetails.orderTime = new Date();
     console.log(orderDetails);
     client = new MongoClient(uri, { useNewUrlParser: true });
     client.connect(err => {
-        const collection = client.db("doctorsPortal").collection("serviceType");
+        const collection = client.db("doctorsPortal").collection("appointment");
         collection.insertOne(orderDetails,(err, result)=>{
             if(err){
                 console.log(err)
