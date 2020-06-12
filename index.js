@@ -12,7 +12,24 @@ const uri = process.env.DB_PATH;
 
 let client = new MongoClient(uri, { useNewUrlParser: true });
 
-app.post('/serviceType', (req, res) => {
+app.get('/serviceType', (req, res) =>{
+    client = new MongoClient(uri, { useNewUrlParser: true });
+    client.connect(err => {
+        const collection = client.db("doctorsPortal").collection("serviceType");
+        collection.find().toArray((err, documents)=>{
+            if(err){
+                console.log(err)
+                res.status(500).send({message:err});
+            }
+            else{
+                res.send(documents);
+            }
+        })
+        client.close();
+      });
+});
+
+app.post('/addServiceType', (req, res) => {
     const orderDetails = req.body;
     orderDetails.orderTime = new Date();
     console.log(orderDetails);
