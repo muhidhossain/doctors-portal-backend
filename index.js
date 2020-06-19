@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser')
 const MongoClient = require('mongodb').MongoClient;
+const objectId = require('mongodb').ObjectId;
 require('dotenv').config()
 
 const app = express();
@@ -18,7 +19,6 @@ app.get('/appointment', (req, res) =>{
         const collection = client.db("doctorsPortal").collection("appointment");
         collection.find().toArray((err, documents)=>{
             if(err){
-                console.log(err)
                 res.status(500).send({message:err});
             }
             else{
@@ -30,19 +30,36 @@ app.get('/appointment', (req, res) =>{
 });
 
 app.post('/addAppointment', (req, res) => {
-    const orderDetails = req.body;
-    orderDetails.orderTime = new Date();
-    console.log(orderDetails);
+    const appointmentDetails = req.body;
+    appointmentDetails.appointmentTime = new Date();
     client = new MongoClient(uri, { useNewUrlParser: true });
     client.connect(err => {
         const collection = client.db("doctorsPortal").collection("appointment");
-        collection.insertOne(orderDetails,(err, result)=>{
+        collection.insertOne(appointmentDetails,(err, result)=>{
             if(err){
-                console.log(err)
                 res.status(500).send({message:err});
             }
             else{
                 res.send(result.ops[0]);
+            }
+        })
+        client.close();
+    });
+});
+
+app.post('/modifyAppointmentByKey', (req, res) => {
+    const _id = req.body._id;
+    const action = req.body.action;
+    client = new MongoClient(uri, { useNewUrlParser: true });
+    client.connect(err => {
+        const collection = client.db("doctorsPortal").collection("appointment");
+        collection.updateOne({"_id": objectId(_id)}, {"set": {"action": action}},  { useUnifiedTopology: true }, (err, result)=>{
+            if(err){
+                res.status(500).send({message:err});
+            }
+            else{
+                console.log("done");
+                res.send(documents);
             }
         })
         client.close();
