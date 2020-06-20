@@ -53,13 +53,12 @@ app.post('/modifyAppointmentByKey', (req, res) => {
     client = new MongoClient(uri, { useNewUrlParser: true });
     client.connect(err => {
         const collection = client.db("doctorsPortal").collection("appointment");
-        collection.updateOne({"_id": objectId(_id)}, {"set": {"action": action}},  { useUnifiedTopology: true }, (err, result)=>{
+        collection.updateOne({"_id": objectId(_id)}, {"$set": {"action": action}}, { useUnifiedTopology: true }, (err, result)=>{
             if(err){
                 res.status(500).send({message:err});
             }
             else{
-                console.log("done");
-                res.send(documents);
+                res.send(result);
             }
         })
         client.close();
