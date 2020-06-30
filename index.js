@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const { ObjectId } = require('mongodb');
 const MongoClient = require('mongodb').MongoClient;
 require('dotenv').config()
 
@@ -47,12 +48,12 @@ app.post('/addAppointment', (req, res) => {
 });
 
 app.post('/modifyAppointmentByKey', (req, res) => {
-    const _id = req.body._id;
+    const key = req.body.key;
     const action = req.body.action;
     client = new MongoClient(uri, { useNewUrlParser: true });
     client.connect(err => {
         const collection = client.db("doctorsPortal").collection("appointment");
-        collection.updateOne({"_id": {_id}}, {"$set": {"action": action}}, { useUnifiedTopology: true }, (err, result)=>{
+        collection.updateOne({"key": key}, {"$set": {"action": action}}, (err, result)=>{
             if(err){
                 res.status(500).send({message:err});
             }
